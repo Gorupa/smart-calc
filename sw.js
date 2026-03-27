@@ -1,7 +1,9 @@
-const CACHE_NAME = 'smart-calc-v1';
+const CACHE_NAME = 'smart-calc-v1.0';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
+  './style.css',
+  './script.js',
   './manifest.json',
   './icon-192.png',
   './icon-512.png'
