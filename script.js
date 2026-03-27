@@ -1,9 +1,7 @@
-// Register Service Worker for offline PWA capability
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
 }
 
-// Data for auto-filling loan templates
 const loanProfiles = {
     'two': { amt: 100000, rate: 11.5, time: 3, fee: 2, jargon: "💡 Vehicles depreciate quickly. Watch out for 'Flat Rates' offered by dealers—they almost double your actual APR!" },
     'four': { amt: 800000, rate: 9.0, time: 5, fee: 1, jargon: "💡 Loans are usually secured against the car. 'Reducing Balance' is the standard for banks." },
@@ -11,7 +9,6 @@ const loanProfiles = {
     'personal': { amt: 300000, rate: 13.0, time: 3, fee: 2.5, jargon: "💡 Unsecured loan. Very high rates and high processing fees. Always check the final APR before signing." }
 };
 
-// Switch between dashboard views
 function showView(viewId, event) {
     document.getElementById('emi-view').style.display = 'none';
     document.getElementById('calc-view').style.display = 'none';
@@ -28,7 +25,6 @@ function showView(viewId, event) {
     }
 }
 
-// Populate and trigger EMI calculations
 function showEMI(title, typeId) {
     const profile = loanProfiles[typeId];
     document.getElementById('loan-title').innerText = title;
@@ -39,10 +35,14 @@ function showEMI(title, typeId) {
     document.getElementById('proc-fee').value = profile.fee;
     document.getElementById('other-fees').value = 0;
     document.getElementById('rate-type').value = 'reducing';
+    
+    // Auto-hide schedule on tab switch
+    document.getElementById('amortization-schedule').style.display = 'none';
+    document.getElementById('toggle-schedule-btn').innerText = '📊 View Repayment Schedule';
+    
     calculateEMI();
 }
 
-// Core IRR calculation logic
 function calculateTrueAPR(disbursed, emi, months) {
     if (disbursed <= 0 || emi <= 0 || months <= 0) return 0;
     let minRate = 0, maxRate = 100, guess = 1;
@@ -54,7 +54,6 @@ function calculateTrueAPR(disbursed, emi, months) {
     return guess * 12; 
 }
 
-// Update the DOM based on user input
 function calculateEMI() {
     let p = parseFloat(document.getElementById('principal').value) || 0;
     let r_annual = parseFloat(document.getElementById('rate').value) || 0;
@@ -91,6 +90,10 @@ function calculateEMI() {
         let pPercent = (p / totalPayment) * 100;
         let iPercent = (totalInterest / totalPayment) * 100;
         document.getElementById('pie-chart').style.background = `conic-gradient(var(--md-sys-color-primary) 0% ${pPercent}%, #A5B4FC ${pPercent}% ${pPercent + iPercent}%, #F43F5E ${pPercent + iPercent}% 100%)`;
+        
+        // Generate Schedule
+        generateSchedule(p, r, n, emi, rateType, r_annual);
+        
     } else {
         document.getElementById('emi-result').innerText = "₹ 0";
         document.getElementById('total-interest').innerText = "₹ 0";
@@ -98,10 +101,60 @@ function calculateEMI() {
         document.getElementById('total-payment').innerText = "₹ 0";
         document.getElementById('apr-result').innerText = "Real APR: 0%";
         document.getElementById('pie-chart').style.background = `conic-gradient(#E5E7EB 0% 100%)`;
+        document.getElementById('schedule-body').innerHTML = "";
     }
 }
 
-// Logic for the basic calculator tab
+// NEW: Toggle Schedule Visibility
+function toggleSchedule() {
+    const sched = document.getElementById('amortization-schedule');
+    const btn = document.getElementById('toggle-schedule-btn');
+    if (sched.style.display === 'block') {
+        sched.style.display = 'none';
+        btn.innerText = '📊 View Repayment Schedule';
+    } else {
+        sched.style.display = 'block';
+        btn.innerText = 'Hide Repayment Schedule';
+    }
+}
+
+// NEW: Generate Amortization Data
+function generateSchedule(principal, monthlyRate, months, emi, rateType, annualRate) {
+    const tbody = document.getElementById('schedule-body');
+    let balance = principal;
+    let html = '';
+    
+    let flatPrincipal = principal / months;
+    let flatInterest = (principal * (annualRate / 100) * (months / 12)) / months;
+
+    for (let i = 1; i <= months; i++) {
+        let interestPaid = 0;
+        let principalPaid = 0;
+
+        if (rateType === 'reducing') {
+            interestPaid = balance * monthlyRate;
+            principalPaid = emi - interestPaid;
+        } else {
+            interestPaid = flatInterest;
+            principalPaid = flatPrincipal;
+        }
+
+        balance -= principalPaid;
+        if (balance < 0) balance = 0; // Prevent negative zero display
+
+        html += `
+            <tr>
+                <td style="text-align: center; color: var(--md-sys-color-on-surface-variant); font-weight: 600;">${i}</td>
+                <td style="text-align: right; color: var(--md-sys-color-primary);">₹${Math.round(principalPaid).toLocaleString('en-IN')}</td>
+                <td style="text-align: right; color: #F43F5E;">₹${Math.round(interestPaid).toLocaleString('en-IN')}</td>
+                <td style="text-align: right; font-weight: 600;">₹${Math.round(balance).toLocaleString('en-IN')}</td>
+            </tr>
+        `;
+    }
+    tbody.innerHTML = html;
+}
+
+// Basic Calculator Logic
 let calcExpr = "";
 function calcAction(val) {
     let display = document.getElementById('calc-display');
@@ -118,5 +171,4 @@ function calcAction(val) {
     display.scrollLeft = display.scrollWidth;
 }
 
-// Set initial state on load
 window.onload = () => showEMI('Two-Wheeler Loan', 'two');
