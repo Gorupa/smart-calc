@@ -146,54 +146,86 @@
             </div>
 
             <div id="compare-view" style="display: none; width: 100%;">
-                <h1 style="margin-bottom: 24px;">Deal Comparator</h1>
+                <div style="text-align: center; margin-bottom: 24px;">
+                    <h1 style="margin: 0;">Deal Comparator</h1>
+                    <p style="color: var(--md-sys-color-on-surface-variant); margin-top: 8px;">Pit two loans against each other to find the absolute lowest cost.</p>
+                </div>
+                
+                <div id="compare-winner" class="winner-banner">⚖️ Enter details below to find the best deal.</div>
+
                 <div class="compare-grid">
-                    <div class="compare-card">
-                        <h3>Option A</h3>
-                        <div class="input-group"><label>Loan Amount</label><input type="number" id="comp-p-a" value="500000" oninput="runCompare()"></div>
-                        <div class="input-row">
-                            <div class="input-group"><label>Interest (%)</label><input type="number" id="comp-r-a" value="10" step="0.1" oninput="runCompare()"></div>
-                            <div class="input-group"><label>Tenure (Yrs)</label><input type="number" id="comp-t-a" value="5" step="0.5" oninput="runCompare()"></div>
+                    <div class="compare-card" id="card-a">
+                        <div class="compare-header">Option A</div>
+                        <div class="compare-inputs">
+                            <div class="input-group"><label>Loan Amount</label><input type="number" id="comp-p-a" value="500000" oninput="runCompare()"></div>
+                            <div class="input-row">
+                                <div class="input-group"><label>Interest (%)</label><input type="number" id="comp-r-a" value="10" step="0.1" oninput="runCompare()"></div>
+                                <div class="input-group"><label>Tenure (Yrs)</label><input type="number" id="comp-t-a" value="5" step="0.5" oninput="runCompare()"></div>
+                            </div>
+                            <div class="input-group"><label>Proc. Fee (%)</label><input type="number" id="comp-f-a" value="2" step="0.1" oninput="runCompare()"></div>
                         </div>
-                        <div class="input-group"><label>Proc. Fee (%)</label><input type="number" id="comp-f-a" value="2" step="0.1" oninput="runCompare()"></div>
                         
                         <div class="comp-results" id="res-a">
-                            <p>EMI: <span id="comp-emi-a">0</span></p>
-                            <p>Total Interest: <span id="comp-int-a">0</span></p>
-                            <p>Total Fees: <span id="comp-fee-a">0</span></p>
-                            <h4>Total Cost: <span id="comp-total-a" style="color:var(--md-sys-color-primary)">0</span></h4>
+                            <div class="res-row"><span>Monthly EMI</span><strong id="comp-emi-a">0</strong></div>
+                            <div class="res-row"><span>Total Interest</span><strong id="comp-int-a" style="color: #F43F5E;">0</strong></div>
+                            <div class="res-row"><span>Total Fees</span><strong id="comp-fee-a">0</strong></div>
+                            <div class="res-divider"></div>
+                            <div class="res-total"><span>Total Cost</span><h3 id="comp-total-a">0</h3></div>
                         </div>
                     </div>
                     
-                    <div class="compare-card">
-                        <h3>Option B</h3>
-                        <div class="input-group"><label>Loan Amount</label><input type="number" id="comp-p-b" value="500000" oninput="runCompare()"></div>
-                        <div class="input-row">
-                            <div class="input-group"><label>Interest (%)</label><input type="number" id="comp-r-b" value="11" step="0.1" oninput="runCompare()"></div>
-                            <div class="input-group"><label>Tenure (Yrs)</label><input type="number" id="comp-t-b" value="5" step="0.5" oninput="runCompare()"></div>
+                    <div class="compare-card" id="card-b">
+                        <div class="compare-header">Option B</div>
+                        <div class="compare-inputs">
+                            <div class="input-group"><label>Loan Amount</label><input type="number" id="comp-p-b" value="500000" oninput="runCompare()"></div>
+                            <div class="input-row">
+                                <div class="input-group"><label>Interest (%)</label><input type="number" id="comp-r-b" value="11" step="0.1" oninput="runCompare()"></div>
+                                <div class="input-group"><label>Tenure (Yrs)</label><input type="number" id="comp-t-b" value="5" step="0.5" oninput="runCompare()"></div>
+                            </div>
+                            <div class="input-group"><label>Proc. Fee (%)</label><input type="number" id="comp-f-b" value="0" step="0.1" oninput="runCompare()"></div>
                         </div>
-                        <div class="input-group"><label>Proc. Fee (%)</label><input type="number" id="comp-f-b" value="0" step="0.1" oninput="runCompare()"></div>
                         
                         <div class="comp-results" id="res-b">
-                            <p>EMI: <span id="comp-emi-b">0</span></p>
-                            <p>Total Interest: <span id="comp-int-b">0</span></p>
-                            <p>Total Fees: <span id="comp-fee-b">0</span></p>
-                            <h4>Total Cost: <span id="comp-total-b" style="color:var(--md-sys-color-primary)">0</span></h4>
+                            <div class="res-row"><span>Monthly EMI</span><strong id="comp-emi-b">0</strong></div>
+                            <div class="res-row"><span>Total Interest</span><strong id="comp-int-b" style="color: #F43F5E;">0</strong></div>
+                            <div class="res-row"><span>Total Fees</span><strong id="comp-fee-b">0</strong></div>
+                            <div class="res-divider"></div>
+                            <div class="res-total"><span>Total Cost</span><h3 id="comp-total-b">0</h3></div>
                         </div>
                     </div>
                 </div>
-                <div id="compare-winner" class="winner-banner">Enter details to compare deals.</div>
             </div>
 
             <div id="calc-view" class="calc-view">
-                <h1 style="align-self: flex-start; margin-bottom: 24px;">Calculator</h1>
-                <div class="calc-display" id="calc-display">0</div>
-                <div class="calc-grid">
-                    <button class="calc-btn clear" onclick="calcAction('C')">C</button><button class="calc-btn op" onclick="calcAction('(')">(</button><button class="calc-btn op" onclick="calcAction(')')">)</button><button class="calc-btn op" onclick="calcAction('/')">÷</button>
-                    <button class="calc-btn" onclick="calcAction('7')">7</button><button class="calc-btn" onclick="calcAction('8')">8</button><button class="calc-btn" onclick="calcAction('9')">9</button><button class="calc-btn op" onclick="calcAction('*')">×</button>
-                    <button class="calc-btn" onclick="calcAction('4')">4</button><button class="calc-btn" onclick="calcAction('5')">5</button><button class="calc-btn" onclick="calcAction('6')">6</button><button class="calc-btn op" onclick="calcAction('-')">−</button>
-                    <button class="calc-btn" onclick="calcAction('1')">1</button><button class="calc-btn" onclick="calcAction('2')">2</button><button class="calc-btn" onclick="calcAction('3')">3</button><button class="calc-btn op" onclick="calcAction('+')">+</button>
-                    <button class="calc-btn" onclick="calcAction('0')">0</button><button class="calc-btn" onclick="calcAction('.')">.</button><button class="calc-btn eval" onclick="calcAction('=')">=</button>
+                <div class="calc-wrapper">
+                    <div class="calc-display-area">
+                        <div class="calc-display" id="calc-display">0</div>
+                    </div>
+                    <div class="calc-grid">
+                        <button class="calc-btn clear" onclick="calcAction('C')">AC</button>
+                        <button class="calc-btn op-secondary" onclick="calcAction('(')">(</button>
+                        <button class="calc-btn op-secondary" onclick="calcAction(')')">)</button>
+                        <button class="calc-btn op-primary" onclick="calcAction('/')">÷</button>
+                        
+                        <button class="calc-btn num" onclick="calcAction('7')">7</button>
+                        <button class="calc-btn num" onclick="calcAction('8')">8</button>
+                        <button class="calc-btn num" onclick="calcAction('9')">9</button>
+                        <button class="calc-btn op-primary" onclick="calcAction('*')">×</button>
+                        
+                        <button class="calc-btn num" onclick="calcAction('4')">4</button>
+                        <button class="calc-btn num" onclick="calcAction('5')">5</button>
+                        <button class="calc-btn num" onclick="calcAction('6')">6</button>
+                        <button class="calc-btn op-primary" onclick="calcAction('-')">−</button>
+                        
+                        <button class="calc-btn num" onclick="calcAction('1')">1</button>
+                        <button class="calc-btn num" onclick="calcAction('2')">2</button>
+                        <button class="calc-btn num" onclick="calcAction('3')">3</button>
+                        <button class="calc-btn op-primary" onclick="calcAction('+')">+</button>
+                        
+                        <button class="calc-btn num zero" onclick="calcAction('0')">0</button>
+                        <button class="calc-btn num" onclick="calcAction('.')">.</button>
+                        <button class="calc-btn eval" onclick="calcAction('=')">=</button>
+                    </div>
                 </div>
             </div>
 
@@ -205,21 +237,45 @@
                         <option value="two">🏍️ Two-Wheeler Loan</option><option value="four">🚗 Four-Wheeler Loan</option><option value="home">🏠 Home Loan</option>
                         <option value="personal">👤 Personal Loan</option><option value="calc">🧮 Standard Calculator</option>
                     </select>
-                    <p id="settings-saved-msg" style="color: var(--md-sys-color-primary); display: none; margin-top: 10px;">✓ Saved!</p>
+                    <p id="settings-saved-msg" style="color: var(--md-sys-color-primary); display: none; margin-top: 10px; font-weight: 600;">✓ Saved!</p>
                 </div>
             </div>
 
             <div id="about-view" class="info-view">
                 <h1>About App (v1.0)</h1>
-                <p>Technology should empower, not exploit. Radical transparency.</p>
-                <p><strong>Lead Developer:</strong> Gaurav Kalal (<a href="https://gorupa.github.io/">Portfolio</a>)</p>
-                <p><a href="https://github.com/gorupa/smart-calc">View on GitHub</a></p>
+                <div style="background: var(--md-sys-color-surface-variant); padding: 24px; border-radius: 20px; margin-bottom: 24px;">
+                    <h3 style="margin-top: 0;">Our Mission</h3>
+                    <p>Technology should empower, not exploit. Built to strip away the predatory ads, hidden trackers, and confusing jargon found in mainstream financial tools. What you see is exactly what you get: <strong>radical transparency and free access to information.</strong></p>
+                </div>
+                <h3>Developer Profile</h3>
+                <p><strong>Lead Developer:</strong> Gaurav Kalal</p>
+                <p><strong>Portfolio:</strong> <a href="https://gorupa.github.io/" target="_blank" style="color: var(--md-sys-color-primary); font-weight: 600; text-decoration: none;">gorupa.github.io</a></p>
+                <h3 style="margin-top: 24px;">Open Source Contribution</h3>
+                <p>This is a 100% open-source project. We believe in collaborative development.</p>
+                <p><strong>Source Code & Issues:</strong> <a href="https://github.com/gorupa/smart-calc" target="_blank" style="color: var(--md-sys-color-primary); font-weight: 600; text-decoration: none;">View Repository on GitHub</a></p>
             </div>
+            
             <div id="privacy-view" class="info-view">
-                <h1>Privacy Policy</h1><p>Zero tracking. 100% Offline.</p>
+                <h1>Privacy Policy</h1>
+                <p><strong>Effective Date:</strong> March 2026</p>
+                <p>This application was built with a strict offline-first, privacy-by-design architecture. Here is how we handle your data:</p>
+                <ul>
+                    <li><strong>Zero Tracking:</strong> We do not use Google Analytics, Firebase, or any other telemetry to track your usage.</li>
+                    <li><strong>Zero Data Collection:</strong> All calculations are performed locally on your device. No financial data is ever sent to an external server.</li>
+                    <li><strong>Offline Capability:</strong> Once loaded, this app functions entirely without an internet connection.</li>
+                    <li><strong>No Ads:</strong> There are no ad networks embedded in this application.</li>
+                </ul>
+            </div>
+
+            <div id="terms-view" class="info-view">
+                <h1>Terms of Service</h1>
+                <p><strong>License:</strong> MIT License</p>
+                <p>This software is provided "as is", without warranty of any kind, express or implied.</p>
+                <p><strong>Financial Disclaimer:</strong> The EMI and APR calculations provided by this application are for informational and estimation purposes only. They do not constitute professional financial advice. Actual loan terms, interest rates, and fees will vary based on your lender and financial institution.</p>
             </div>
         </div>
     </div>
+    <div class="custom-footer">Smart Calc v1.0 • Built with ❤️ in India 🇮🇳 by Gaurav Kalal</div>
 </div>
 
 <script src="script.js"></script>
