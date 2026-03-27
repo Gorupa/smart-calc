@@ -8,7 +8,6 @@
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon-192.png">
     <link rel="stylesheet" href="style.css">
-    
     <title>Smart EMI & Calculator App</title>
 </head>
 <body>
@@ -22,12 +21,12 @@
             <button id="btn-home" class="tab-btn" onclick="showView('emi-view', event); showEMI('Home Loan', 'home')">🏠 Home Loan</button>
             <button id="btn-personal" class="tab-btn" onclick="showView('emi-view', event); showEMI('Personal Loan', 'personal')">👤 Personal Loan</button>
             <hr class="divider">
+            <button id="btn-compare" class="tab-btn" onclick="showView('compare-view', event)">⚖️ Compare Loans</button>
             <button id="btn-calc" class="tab-btn" onclick="showView('calc-view', event)">🧮 Calculator</button>
             <hr class="divider">
             <button class="tab-btn" onclick="showView('settings-view', event)">⚙️ Settings</button>
             <button class="tab-btn" onclick="showView('about-view', event)">👤 About App</button>
             <button class="tab-btn" onclick="showView('privacy-view', event)">🛡️ Privacy</button>
-            <button class="tab-btn" onclick="showView('terms-view', event)">📜 Terms</button>
         </div>
 
         <div class="main-content">
@@ -39,18 +38,28 @@
 
                 <div class="emi-layout">
                     <div class="inputs-section">
-                        <div class="input-row">
+                        <div class="asset-builder-box">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="use-asset-builder" onchange="toggleAssetBuilder(); calculateEMI();">
+                                <span class="slider"></span>
+                            </label>
+                            <span style="font-size: 14px; font-weight: 600;">Calculate from Asset Price (Out-the-door)</span>
+                        </div>
+
+                        <div id="direct-loan-inputs">
                             <div class="input-group">
                                 <label>Loan Amount (₹)</label>
                                 <input type="number" id="principal" oninput="calculateEMI()">
                             </div>
-                            <div class="input-group">
-                                <label>Rate Type</label>
-                                <select id="rate-type" onchange="calculateEMI()">
-                                    <option value="reducing">Reducing Balance</option>
-                                    <option value="fixed">Fixed / Flat Rate</option>
-                                </select>
+                        </div>
+
+                        <div id="asset-builder-inputs" style="display: none; background: var(--md-sys-color-surface-variant); padding: 16px; border-radius: 16px; margin-bottom: 16px;">
+                            <div class="input-row">
+                                <div class="input-group"><label>Total Asset Price</label><input type="number" id="asset-price" value="0" oninput="calculateEMI()"></div>
+                                <div class="input-group"><label>Down Payment</label><input type="number" id="down-payment" value="0" oninput="calculateEMI()"></div>
+                                <div class="input-group"><label>Trade-in Value</label><input type="number" id="trade-in" value="0" oninput="calculateEMI()"></div>
                             </div>
+                            <div style="text-align: right; font-weight: 700; color: var(--md-sys-color-primary); font-size: 14px;">Calculated Loan: <span id="calc-loan-display">₹0</span></div>
                         </div>
 
                         <div class="input-row">
@@ -64,42 +73,61 @@
                             </div>
                         </div>
 
-                        <div class="advanced-charges">
-                            <h4>Additional Charges (Optional)</h4>
-                            <div class="input-row">
-                                <div class="input-group">
-                                    <label>Processing Fee (%)</label>
-                                    <input type="number" id="proc-fee" value="0" step="0.1" oninput="calculateEMI()">
+                        <details class="advanced-panel">
+                            <summary>⚙️ Advanced: Prepayments, Fees & Regional Rules</summary>
+                            <div class="advanced-content">
+                                
+                                <h4>Prepayment Engine (Save Interest)</h4>
+                                <div class="input-row">
+                                    <div class="input-group"><label>Extra Monthly Payment</label><input type="number" id="extra-emi" value="0" oninput="calculateEMI()"></div>
+                                    <div class="input-group"><label>One-Time Lump Sum</label><input type="number" id="lump-sum" value="0" oninput="calculateEMI()"></div>
+                                    <div class="input-group"><label>Lump Sum Month</label><input type="number" id="lump-month" value="12" oninput="calculateEMI()"></div>
                                 </div>
-                                <div class="input-group">
-                                    <label>Stamp Duty/Other (₹)</label>
-                                    <input type="number" id="other-fees" value="0" oninput="calculateEMI()">
+
+                                <h4>Fees & Regional Settings</h4>
+                                <div class="input-row">
+                                    <div class="input-group">
+                                        <label>Country Rules</label>
+                                        <select id="country-rules" onchange="calculateEMI()">
+                                            <option value="IN">🇮🇳 Standard / India (Monthly)</option>
+                                            <option value="US">🇺🇸 USA (PITI Mode)</option>
+                                            <option value="CA">🇨🇦 Canada (Semi-Annual)</option>
+                                        </select>
+                                    </div>
+                                    <div class="input-group"><label>Processing Fee (%)</label><input type="number" id="proc-fee" value="0" step="0.1" oninput="calculateEMI()"></div>
+                                    <div class="input-group"><label>Rate Type</label>
+                                        <select id="rate-type" onchange="calculateEMI()">
+                                            <option value="reducing">Reducing Balance</option>
+                                            <option value="fixed">Fixed / Flat Rate</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div id="us-piti-inputs" class="input-row" style="display: none; margin-top: 10px; border-top: 1px solid #ddd; padding-top: 10px;">
+                                    <div class="input-group"><label>Yearly Prop Tax</label><input type="number" id="us-tax" value="0" oninput="calculateEMI()"></div>
+                                    <div class="input-group"><label>Yearly Insurance</label><input type="number" id="us-ins" value="0" oninput="calculateEMI()"></div>
+                                    <div class="input-group"><label>Monthly HOA</label><input type="number" id="us-hoa" value="0" oninput="calculateEMI()"></div>
                                 </div>
                             </div>
-                        </div>
+                        </details>
                     </div>
 
                     <div class="results-section">
-                        <h3>Monthly EMI</h3>
+                        <h3 id="monthly-label">Monthly EMI</h3>
                         <p class="emi-amount" id="emi-result">₹ 0</p>
-                        <div class="apr-badge" id="apr-result">Real APR: 0%</div>
                         
+                        <div id="savings-badge" class="savings-badge" style="display: none;">Saved ₹0 & 0 Months! 🎉</div>
+                        <div id="tax-badge" class="tax-badge" style="display: none;">Est. India Tax Savings: ₹0/yr</div>
+
                         <div class="pie-chart" id="pie-chart"></div>
                         <div class="chart-legend">
                             <div class="legend-item"><div class="dot" style="background: var(--md-sys-color-primary);"></div> Principal</div>
                             <div class="legend-item"><div class="dot" style="background: #A5B4FC;"></div> Interest</div>
-                            <div class="legend-item"><div class="dot" style="background: #F43F5E;"></div> Fees</div>
                         </div>
 
                         <div class="summary-grid">
-                            <div class="summary-item">
-                                <p>Total Interest</p>
-                                <h4 id="total-interest">₹ 0</h4>
-                            </div>
-                            <div class="summary-item">
-                                <p>Total Fees</p>
-                                <h4 id="total-fees">₹ 0</h4>
-                            </div>
+                            <div class="summary-item"><p>Total Interest</p><h4 id="total-interest">₹ 0</h4></div>
+                            <div class="summary-item"><p>Total Fees</p><h4 id="total-fees">₹ 0</h4></div>
                             <div class="summary-item" style="grid-column: span 2; text-align: center; background: rgba(79, 70, 229, 0.1);">
                                 <p>Total Payment (Prin + Int + Fees)</p>
                                 <h4 id="total-payment" style="font-size: 20px;">₹ 0</h4>
@@ -107,17 +135,9 @@
                         </div>
                         
                         <button id="toggle-schedule-btn" class="schedule-btn" onclick="toggleSchedule()">📊 View Repayment Schedule</button>
-                        
                         <div id="amortization-schedule" class="schedule-container">
                             <table class="schedule-table">
-                                <thead>
-                                    <tr>
-                                        <th>Month</th>
-                                        <th style="text-align: right;">Principal</th>
-                                        <th style="text-align: right;">Interest</th>
-                                        <th style="text-align: right;">Balance</th>
-                                    </tr>
-                                </thead>
+                                <thead><tr><th>Month</th><th style="text-align: right;">Principal</th><th style="text-align: right;">Interest</th><th style="text-align: right;">Balance</th></tr></thead>
                                 <tbody id="schedule-body"></tbody>
                             </table>
                         </div>
@@ -125,29 +145,55 @@
                 </div>
             </div>
 
+            <div id="compare-view" style="display: none; width: 100%;">
+                <h1 style="margin-bottom: 24px;">Deal Comparator</h1>
+                <div class="compare-grid">
+                    <div class="compare-card">
+                        <h3>Option A</h3>
+                        <div class="input-group"><label>Loan Amount</label><input type="number" id="comp-p-a" value="500000" oninput="runCompare()"></div>
+                        <div class="input-row">
+                            <div class="input-group"><label>Interest (%)</label><input type="number" id="comp-r-a" value="10" step="0.1" oninput="runCompare()"></div>
+                            <div class="input-group"><label>Tenure (Yrs)</label><input type="number" id="comp-t-a" value="5" step="0.5" oninput="runCompare()"></div>
+                        </div>
+                        <div class="input-group"><label>Proc. Fee (%)</label><input type="number" id="comp-f-a" value="2" step="0.1" oninput="runCompare()"></div>
+                        
+                        <div class="comp-results" id="res-a">
+                            <p>EMI: <span id="comp-emi-a">0</span></p>
+                            <p>Total Interest: <span id="comp-int-a">0</span></p>
+                            <p>Total Fees: <span id="comp-fee-a">0</span></p>
+                            <h4>Total Cost: <span id="comp-total-a" style="color:var(--md-sys-color-primary)">0</span></h4>
+                        </div>
+                    </div>
+                    
+                    <div class="compare-card">
+                        <h3>Option B</h3>
+                        <div class="input-group"><label>Loan Amount</label><input type="number" id="comp-p-b" value="500000" oninput="runCompare()"></div>
+                        <div class="input-row">
+                            <div class="input-group"><label>Interest (%)</label><input type="number" id="comp-r-b" value="11" step="0.1" oninput="runCompare()"></div>
+                            <div class="input-group"><label>Tenure (Yrs)</label><input type="number" id="comp-t-b" value="5" step="0.5" oninput="runCompare()"></div>
+                        </div>
+                        <div class="input-group"><label>Proc. Fee (%)</label><input type="number" id="comp-f-b" value="0" step="0.1" oninput="runCompare()"></div>
+                        
+                        <div class="comp-results" id="res-b">
+                            <p>EMI: <span id="comp-emi-b">0</span></p>
+                            <p>Total Interest: <span id="comp-int-b">0</span></p>
+                            <p>Total Fees: <span id="comp-fee-b">0</span></p>
+                            <h4>Total Cost: <span id="comp-total-b" style="color:var(--md-sys-color-primary)">0</span></h4>
+                        </div>
+                    </div>
+                </div>
+                <div id="compare-winner" class="winner-banner">Enter details to compare deals.</div>
+            </div>
+
             <div id="calc-view" class="calc-view">
                 <h1 style="align-self: flex-start; margin-bottom: 24px;">Calculator</h1>
                 <div class="calc-display" id="calc-display">0</div>
                 <div class="calc-grid">
-                    <button class="calc-btn clear" onclick="calcAction('C')">C</button>
-                    <button class="calc-btn op" onclick="calcAction('(')">(</button>
-                    <button class="calc-btn op" onclick="calcAction(')')">)</button>
-                    <button class="calc-btn op" onclick="calcAction('/')">÷</button>
-                    <button class="calc-btn" onclick="calcAction('7')">7</button>
-                    <button class="calc-btn" onclick="calcAction('8')">8</button>
-                    <button class="calc-btn" onclick="calcAction('9')">9</button>
-                    <button class="calc-btn op" onclick="calcAction('*')">×</button>
-                    <button class="calc-btn" onclick="calcAction('4')">4</button>
-                    <button class="calc-btn" onclick="calcAction('5')">5</button>
-                    <button class="calc-btn" onclick="calcAction('6')">6</button>
-                    <button class="calc-btn op" onclick="calcAction('-')">−</button>
-                    <button class="calc-btn" onclick="calcAction('1')">1</button>
-                    <button class="calc-btn" onclick="calcAction('2')">2</button>
-                    <button class="calc-btn" onclick="calcAction('3')">3</button>
-                    <button class="calc-btn op" onclick="calcAction('+')">+</button>
-                    <button class="calc-btn" onclick="calcAction('0')">0</button>
-                    <button class="calc-btn" onclick="calcAction('.')">.</button>
-                    <button class="calc-btn eval" onclick="calcAction('=')">=</button>
+                    <button class="calc-btn clear" onclick="calcAction('C')">C</button><button class="calc-btn op" onclick="calcAction('(')">(</button><button class="calc-btn op" onclick="calcAction(')')">)</button><button class="calc-btn op" onclick="calcAction('/')">÷</button>
+                    <button class="calc-btn" onclick="calcAction('7')">7</button><button class="calc-btn" onclick="calcAction('8')">8</button><button class="calc-btn" onclick="calcAction('9')">9</button><button class="calc-btn op" onclick="calcAction('*')">×</button>
+                    <button class="calc-btn" onclick="calcAction('4')">4</button><button class="calc-btn" onclick="calcAction('5')">5</button><button class="calc-btn" onclick="calcAction('6')">6</button><button class="calc-btn op" onclick="calcAction('-')">−</button>
+                    <button class="calc-btn" onclick="calcAction('1')">1</button><button class="calc-btn" onclick="calcAction('2')">2</button><button class="calc-btn" onclick="calcAction('3')">3</button><button class="calc-btn op" onclick="calcAction('+')">+</button>
+                    <button class="calc-btn" onclick="calcAction('0')">0</button><button class="calc-btn" onclick="calcAction('.')">.</button><button class="calc-btn eval" onclick="calcAction('=')">=</button>
                 </div>
             </div>
 
@@ -155,58 +201,24 @@
                 <h1>App Settings</h1>
                 <div style="background: var(--md-sys-color-surface-variant); padding: 24px; border-radius: 20px;">
                     <h3 style="margin-top: 0;">Startup Screen</h3>
-                    <p>Choose which calculator opens automatically when you launch the app.</p>
-                    <div class="input-group" style="max-width: 300px;">
-                        <select id="default-tab-select" onchange="saveDefaultTab()">
-                            <option value="two">🏍️ Two-Wheeler Loan</option>
-                            <option value="four">🚗 Four-Wheeler Loan</option>
-                            <option value="home">🏠 Home Loan</option>
-                            <option value="personal">👤 Personal Loan</option>
-                            <option value="calc">🧮 Standard Calculator</option>
-                        </select>
-                    </div>
-                    <p id="settings-saved-msg" style="color: var(--md-sys-color-primary); font-weight: 600; display: none; margin-top: 10px;">✓ Preference saved!</p>
+                    <select id="default-tab-select" onchange="saveDefaultTab()" style="max-width:300px;">
+                        <option value="two">🏍️ Two-Wheeler Loan</option><option value="four">🚗 Four-Wheeler Loan</option><option value="home">🏠 Home Loan</option>
+                        <option value="personal">👤 Personal Loan</option><option value="calc">🧮 Standard Calculator</option>
+                    </select>
+                    <p id="settings-saved-msg" style="color: var(--md-sys-color-primary); display: none; margin-top: 10px;">✓ Saved!</p>
                 </div>
             </div>
 
             <div id="about-view" class="info-view">
                 <h1>About App (v1.0)</h1>
-                <div style="background: var(--md-sys-color-surface-variant); padding: 24px; border-radius: 20px; margin-bottom: 24px;">
-                    <h3 style="margin-top: 0;">Our Mission</h3>
-                    <p>Technology should empower, not exploit. Built to strip away the predatory ads, hidden trackers, and confusing jargon found in mainstream financial tools. What you see is exactly what you get: <strong>radical transparency and free access to information.</strong></p>
-                </div>
-                <h3>Developer Profile</h3>
-                <p><strong>Lead Developer:</strong> Gaurav Kalal</p>
-                <p><strong>Portfolio:</strong> <a href="https://gorupa.github.io/" target="_blank" style="color: var(--md-sys-color-primary); font-weight: 600; text-decoration: none;">gorupa.github.io</a></p>
-                
-                <h3 style="margin-top: 24px;">Open Source Contribution</h3>
-                <p>This is a 100% open-source project. We believe in collaborative development.</p>
-                <p><strong>Source Code & Issues:</strong> <a href="https://github.com/gorupa/smart-calc" target="_blank" style="color: var(--md-sys-color-primary); font-weight: 600; text-decoration: none;">View Repository on GitHub</a></p>
+                <p>Technology should empower, not exploit. Radical transparency.</p>
+                <p><strong>Lead Developer:</strong> Gaurav Kalal (<a href="https://gorupa.github.io/">Portfolio</a>)</p>
+                <p><a href="https://github.com/gorupa/smart-calc">View on GitHub</a></p>
             </div>
-
             <div id="privacy-view" class="info-view">
-                <h1>Privacy Policy</h1>
-                <p><strong>Effective Date:</strong> March 2026</p>
-                <p>This application was built with a strict offline-first, privacy-by-design architecture. Here is how we handle your data:</p>
-                <ul>
-                    <li><strong>Zero Tracking:</strong> We do not use Google Analytics, Firebase, or any other telemetry to track your usage.</li>
-                    <li><strong>Zero Data Collection:</strong> All calculations are performed locally on your device. No financial data is ever sent to an external server.</li>
-                    <li><strong>Offline Capability:</strong> Once loaded, this app functions entirely without an internet connection.</li>
-                    <li><strong>No Ads:</strong> There are no ad networks embedded in this application.</li>
-                </ul>
-            </div>
-
-            <div id="terms-view" class="info-view">
-                <h1>Terms of Service</h1>
-                <p><strong>License:</strong> MIT License</p>
-                <p>This software is provided "as is", without warranty of any kind, express or implied.</p>
-                <p><strong>Financial Disclaimer:</strong> The EMI and APR calculations provided by this application are for informational and estimation purposes only. They do not constitute professional financial advice. Actual loan terms, interest rates, and fees will vary based on your lender and financial institution.</p>
+                <h1>Privacy Policy</h1><p>Zero tracking. 100% Offline.</p>
             </div>
         </div>
-    </div>
-
-    <div class="custom-footer">
-        Smart Calc v1.0 • Built with ❤️ in India 🇮🇳 by Gaurav Kalal
     </div>
 </div>
 
