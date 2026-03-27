@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#4F46E5">
+    <meta name="description" content="A simple, human-centric EMI & Standard Calculator.">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    
+    <title>Smart EMI & Calculator App</title>
+    <style>
+        :root {
+            --md-sys-color-primary: #4F46E5;
+            --md-sys-color-primary-container: #E0E7FF;
+            --md-sys-color-on-primary-container: #312E81;
+            --md-sys-color-surface: #FFFFFF;
+            --md-sys-color-surface-variant: #F3F4F6;
+            --md-sys-color-on-surface: #1F2937;
+            --md-sys-color-on-surface-variant: #6B7280;
+            --md-sys-color-outline: #D1D5DB;
+            --md-sys-color-error: #B3261E;
+            --md-sys-color-warning: #F59E0B;
+            --md-elevation-1: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --md-elevation-3: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+        }
+
+        * { box-sizing: border-box; font-family: 'Roboto', 'Segoe UI', system-ui, sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        body { background: linear-gradient(135deg, #F8FAFC 0%, #EEF2FF 100%); color: var(--md-sys-color-on-surface); margin: 0; padding: 2vh 2vw; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .app-container { max-width: 1050px; width: 100%; display: flex; flex-direction: column; gap: 20px; margin-top: auto; margin-bottom: auto; }
+        
+        .dashboard { background: var(--md-sys-color-surface); border-radius: 28px; box-shadow: var(--md-elevation-3); display: flex; overflow: hidden; flex-wrap: wrap; min-height: 600px; }
+        
+        .sidebar { background: var(--md-sys-color-surface-variant); width: 260px; padding: 32px 16px; display: flex; flex-direction: column; gap: 8px; }
+        .sidebar h2 { margin: 0 0 16px 16px; font-size: 22px; font-weight: 700; color: var(--md-sys-color-on-surface); letter-spacing: -0.5px; }
+        .tab-btn { background: transparent; border: none; color: var(--md-sys-color-on-surface-variant); padding: 14px 20px; border-radius: 100px; text-align: left; font-size: 15px; font-weight: 500; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; gap: 12px; }
+        .tab-btn:hover { background: rgba(79, 70, 229, 0.08); color: var(--md-sys-color-primary); }
+        .tab-btn.active { background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container); font-weight: 600; }
+        hr.divider { border: 0; height: 1px; background: var(--md-sys-color-outline); margin: 12px 16px; opacity: 0.5; }
+
+        .main-content { padding: 40px; flex: 1; display: flex; flex-direction: column; background: var(--md-sys-color-surface); }
+        .header-section { margin-bottom: 24px; }
+        h1 { margin: 0 0 8px 0; font-size: 32px; font-weight: 700; color: var(--md-sys-color-on-surface); letter-spacing: -0.5px; }
+        
+        .jargon-box { background: #FEF3C7; color: #92400E; padding: 12px 16px; border-radius: 12px; font-size: 14px; font-weight: 500; border-left: 4px solid var(--md-sys-color-warning); display: flex; align-items: center; gap: 10px; }
+        
+        .emi-layout { display: flex; gap: 40px; }
+        .inputs-section { flex: 1; display: flex; flex-direction: column; gap: 16px; }
+        .input-row { display: flex; gap: 16px; }
+        .input-group { flex: 1; position: relative; }
+        label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 13px; color: var(--md-sys-color-on-surface-variant); text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        input[type="number"], select { width: 100%; padding: 14px; font-size: 16px; font-weight: 500; background: var(--md-sys-color-surface); border: 2px solid var(--md-sys-color-outline); border-radius: 12px; transition: all 0.2s ease; color: var(--md-sys-color-on-surface); }
+        input:focus, select:focus { outline: none; border-color: var(--md-sys-color-primary); box-shadow: 0 0 0 4px var(--md-sys-color-primary-container); }
+
+        .advanced-charges { background: var(--md-sys-color-surface-variant); padding: 16px; border-radius: 16px; margin-top: 8px; }
+        .advanced-charges h4 { margin: 0 0 12px 0; font-size: 14px; color: var(--md-sys-color-on-surface); }
+
+        .results-section { flex: 1.2; background: var(--md-sys-color-primary-container); padding: 32px; border-radius: 24px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: inset 0 2px 10px rgba(0,0,0,0.02); }
+        .results-section h3 { margin: 0 0 8px 0; color: var(--md-sys-color-on-primary-container); font-size: 14px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; opacity: 0.8; }
+        .emi-amount { font-size: 46px; font-weight: 800; color: var(--md-sys-color-primary); margin: 0; letter-spacing: -1px; }
+        .apr-badge { background: var(--md-sys-color-primary); color: white; padding: 4px 12px; border-radius: 100px; font-size: 13px; font-weight: 600; margin-top: 8px; display: inline-block; box-shadow: var(--md-elevation-1); }
+        
+        .pie-chart { width: 140px; height: 140px; border-radius: 50%; background: conic-gradient(var(--md-sys-color-primary) 0% 100%); margin: 24px 0; transition: background 0.4s ease; box-shadow: var(--md-elevation-1); }
+        .chart-legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; font-size: 13px; font-weight: 600; color: var(--md-sys-color-on-primary-container); margin-bottom: 20px; width: 100%; }
+        .legend-item { display: flex; align-items: center; gap: 6px; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+
+        .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; width: 100%; margin-top: auto; border-top: 2px solid rgba(79, 70, 229, 0.15); padding-top: 20px; }
+        .summary-item { text-align: left; background: rgba(255,255,255,0.4); padding: 12px; border-radius: 12px; }
+        .summary-item p { margin: 0; color: var(--md-sys-color-on-primary-container); font-size: 12px; font-weight: 700; opacity: 0.8; text-transform: uppercase; }
+        .summary-item h4 { margin: 4px 0 0 0; font-size: 16px; font-weight: 700; color: var(--md-sys-color-on-surface); }
+
+        .calc-view { display: none; flex-direction: column; align-items: center; width: 100%; max-width: 400px; margin: 0 auto; }
+        .calc-display { width: 100%; background: var(--md-sys-color-surface-variant); border-radius: 20px; padding: 24px; font-size: 42px; text-align: right; margin-bottom: 24px; min-height: 100px; overflow-x: auto; font-weight: 700; color: var(--md-sys-color-on-surface); box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); letter-spacing: -1px; }
+        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; width: 100%; }
+        .calc-btn { padding: 20px; font-size: 22px; border: none; border-radius: 100px; background: var(--md-sys-color-surface-variant); color: var(--md-sys-color-on-surface); cursor: pointer; transition: all 0.1s ease; font-weight: 500; }
+        .calc-btn:active { transform: scale(0.95); background: var(--md-sys-color-outline); }
+        .calc-btn.op { background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container); font-weight: 600; }
+        .calc-btn.eval { background: var(--md-sys-color-primary); color: #fff; grid-column: span 2; font-weight: 600; box-shadow: var(--md-elevation-1); }
+        .calc-btn.clear { background: #FFE4E6; color: var(--md-sys-color-error); font-weight: 600; }
+
+        .info-view { display: none; max-width: 800px; line-height: 1.6; }
+        .info-view h1 { margin-bottom: 16px; }
+        .info-view h3 { color: var(--md-sys-color-primary); }
+
+        .custom-footer { text-align: center; padding: 20px; background: var(--md-sys-color-surface); border-radius: 100px; color: var(--md-sys-color-on-surface-variant); font-size: 15px; font-weight: 500; box-shadow: var(--md-elevation-1); margin-top: 10px; }
+
+        @media (max-width: 850px) {
+            .app-container { padding: 0; gap: 10px; }
+            .dashboard { flex-direction: column; border-radius: 20px; min-height: auto; }
+            .sidebar { width: 100%; flex-direction: row; overflow-x: auto; padding: 16px; border-radius: 20px 20px 0 0; gap: 8px; scrollbar-width: none; }
+            .sidebar::-webkit-scrollbar { display: none; }
+            .sidebar h2 { display: none; }
+            .tab-btn { padding: 12px 20px; white-space: nowrap; font-size: 14px; }
+            hr.divider { display: none; }
+            .main-content { padding: 20px; }
+            .emi-layout { flex-direction: column; gap: 24px; }
+            .input-row { flex-direction: column; gap: 16px; }
+            .custom-footer { border-radius: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="dashboard">
+        <div class="sidebar">
+            <h2>Smart Tools</h2>
+            <button class="tab-btn active" onclick="showView('emi-view', event); showEMI('Two-Wheeler Loan', 'two')">🏍️ Two-Wheeler</button>
+            <button class="tab-btn" onclick="showView('emi-view', event); showEMI('Four-Wheeler Loan', 'four')">🚗 Four-Wheeler</button>
+            <button class="tab-btn" onclick="showView('emi-view', event); showEMI('Home Loan', 'home')">🏠 Home Loan</button>
+            <button class="tab-btn" onclick="showView('emi-view', event); showEMI('Personal Loan', 'personal')">👤 Personal Loan</button>
+            <hr class="divider">
+            <button class="tab-btn" onclick="showView('calc-view', event)">🧮 Calculator</button>
+            <hr class="divider">
+            <button class="tab-btn" onclick="showView('about-view', event)">👤 About App</button>
+            <button class="tab-btn" onclick="showView('privacy-view', event)">🛡️ Privacy</button>
+            <button class="tab-btn" onclick="showView('terms-view', event)">📜 Terms</button>
+        </div>
+
+        <div class="main-content">
+            <div id="emi-view">
+                <div class="header-section">
+                    <h1 id="loan-title">Two-Wheeler Loan</h1>
+                    <div class="jargon-box" id="jargon-box">💡 <span>Info updates here.</span></div>
+                </div>
+
+                <div class="emi-layout">
+                    <div class="inputs-section">
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label>Loan Amount (₹)</label>
+                                <input type="number" id="principal" oninput="calculateEMI()">
+                            </div>
+                            <div class="input-group">
+                                <label>Rate Type</label>
+                                <select id="rate-type" onchange="calculateEMI()">
+                                    <option value="reducing">Reducing Balance</option>
+                                    <option value="fixed">Fixed / Flat Rate</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label>Interest Rate (% p.a.)</label>
+                                <input type="number" id="rate" step="0.1" oninput="calculateEMI()">
+                            </div>
+                            <div class="input-group">
+                                <label>Tenure (Years)</label>
+                                <input type="number" id="tenure" step="0.5" oninput="calculateEMI()">
+                            </div>
+                        </div>
+
+                        <div class="advanced-charges">
+                            <h4>Additional Charges (Optional)</h4>
+                            <div class="input-row">
+                                <div class="input-group">
+                                    <label>Processing Fee (%)</label>
+                                    <input type="number" id="proc-fee" value="0" step="0.1" oninput="calculateEMI()">
+                                </div>
+                                <div class="input-group">
+                                    <label>Stamp Duty/Other (₹)</label>
+                                    <input type="number" id="other-fees" value="0" oninput="calculateEMI()">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="results-section">
+                        <h3>Monthly EMI</h3>
+                        <p class="emi-amount" id="emi-result">₹ 0</p>
+                        <div class="apr-badge" id="apr-result">Real APR: 0%</div>
+                        
+                        <div class="pie-chart" id="pie-chart"></div>
+                        <div class="chart-legend">
+                            <div class="legend-item"><div class="dot" style="background: var(--md-sys-color-primary);"></div> Principal</div>
+                            <div class="legend-item"><div class="dot" style="background: #A5B4FC;"></div> Interest</div>
+                            <div class="legend-item"><div class="dot" style="background: #F43F5E;"></div> Fees</div>
+                        </div>
+
+                        <div class="summary-grid">
+                            <div class="summary-item">
+                                <p>Total Interest</p>
+                                <h4 id="total-interest">₹ 0</h4>
+                            </div>
+                            <div class="summary-item">
+                                <p>Total Fees</p>
+                                <h4 id="total-fees">₹ 0</h4>
+                            </div>
+                            <div class="summary-item" style="grid-column: span 2; text-align: center; background: rgba(79, 70, 229, 0.1);">
+                                <p>Total Payment (Prin + Int + Fees)</p>
+                                <h4 id="total-payment" style="font-size: 20px;">₹ 0</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="calc-view" class="calc-view">
+                <h1 style="align-self: flex-start; margin-bottom: 24px;">Calculator</h1>
+                <div class="calc-display" id="calc-display">0</div>
+                <div class="calc-grid">
+                    <button class="calc-btn clear" onclick="calcAction('C')">C</button>
+                    <button class="calc-btn op" onclick="calcAction('(')">(</button>
+                    <button class="calc-btn op" onclick="calcAction(')')">)</button>
+                    <button class="calc-btn op" onclick="calcAction('/')">÷</button>
+                    <button class="calc-btn" onclick="calcAction('7')">7</button>
+                    <button class="calc-btn" onclick="calcAction('8')">8</button>
+                    <button class="calc-btn" onclick="calcAction('9')">9</button>
+                    <button class="calc-btn op" onclick="calcAction('*')">×</button>
+                    <button class="calc-btn" onclick="calcAction('4')">4</button>
+                    <button class="calc-btn" onclick="calcAction('5')">5</button>
+                    <button class="calc-btn" onclick="calcAction('6')">6</button>
+                    <button class="calc-btn op" onclick="calcAction('-')">−</button>
+                    <button class="calc-btn" onclick="calcAction('1')">1</button>
+                    <button class="calc-btn" onclick="calcAction('2')">2</button>
+                    <button class="calc-btn" onclick="calcAction('3')">3</button>
+                    <button class="calc-btn op" onclick="calcAction('+')">+</button>
+                    <button class="calc-btn" onclick="calcAction('0')">0</button>
+                    <button class="calc-btn" onclick="calcAction('.')">.</button>
+                    <button class="calc-btn eval" onclick="calcAction('=')">=</button>
+                </div>
+            </div>
+
+            <div id="about-view" class="info-view">
+                <h1>About & Manifesto</h1>
+                <div style="background: var(--md-sys-color-surface-variant); padding: 24px; border-radius: 20px; margin-bottom: 24px;">
+                    <h3 style="margin-top: 0;">Our Mission</h3>
+                    <p>Technology should empower, not exploit. Built to strip away the predatory ads, hidden trackers, and confusing jargon found in mainstream financial tools. What you see is exactly what you get: <strong>radical transparency and free access to information.</strong></p>
+                </div>
+                <h3>Developer Profile</h3>
+                <p><strong>Lead Developer:</strong> Gaurav Kalal</p>
+                <p><strong>Source Code:</strong> <a href="https://github.com/gorupa/smart-calc" target="_blank" style="color: var(--md-sys-color-primary); font-weight: 600; text-decoration: none;">View on GitHub</a></p>
+                <p><strong>Contributions:</strong> This is a 100% open-source project. Pull requests, bug reports, and feature suggestions are always welcome via GitHub.</p>
+            </div>
+
+            <div id="privacy-view" class="info-view">
+                <h1>Privacy Policy</h1>
+                <p><strong>Effective Date:</strong> March 2026</p>
+                <p>This application was built with a strict offline-first, privacy-by-design architecture. Here is how we handle your data:</p>
+                <ul>
+                    <li><strong>Zero Tracking:</strong> We do not use Google Analytics, Firebase, or any other telemetry to track your usage.</li>
+                    <li><strong>Zero Data Collection:</strong> All calculations are performed locally on your device. No financial data is ever sent to an external server.</li>
+                    <li><strong>Offline Capability:</strong> Once loaded, this app functions entirely without an internet connection.</li>
+                    <li><strong>No Ads:</strong> There are no ad networks embedded in this application.</li>
+                </ul>
+            </div>
+
+            <div id="terms-view" class="info-view">
+                <h1>Terms of Service</h1>
+                <p><strong>License:</strong> MIT License</p>
+                <p>This software is provided "as is", without warranty of any kind, express or implied.</p>
+                <p><strong>Financial Disclaimer:</strong> The EMI and APR calculations provided by this application are for informational and estimation purposes only. They do not constitute professional financial advice. Actual loan terms, interest rates, and fees will vary based on your lender and financial institution.</p>
+                <p>By using this application, you agree that the developer(s) shall not be liable for any claim, damages, or other liability arising from your use of the software.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="custom-footer">
+        Built with ❤️ in India 🇮🇳 by Gaurav Kalal
+    </div>
+</div>
+
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
+    }
+
+    const loanProfiles = {
+        'two': { amt: 100000, rate: 11.5, time: 3, fee: 2, jargon: "💡 Vehicles depreciate quickly. Watch out for 'Flat Rates' offered by dealers—they almost double your actual APR!" },
+        'four': { amt: 800000, rate: 9.0, time: 5, fee: 1, jargon: "💡 Loans are usually secured against the car. 'Reducing Balance' is the standard for banks." },
+        'home': { amt: 5000000, rate: 8.5, time: 20, fee: 0.5, jargon: "💡 Extremely long tenure. Small changes in interest or prepayments save lakhs. You get tax benefits under 80C & 24(b)." },
+        'personal': { amt: 300000, rate: 13.0, time: 3, fee: 2.5, jargon: "💡 Unsecured loan. Very high rates and high processing fees. Always check the final APR before signing." }
+    };
+
+    function showView(viewId, event) {
+        document.getElementById('emi-view').style.display = 'none';
+        document.getElementById('calc-view').style.display = 'none';
+        document.getElementById('about-view').style.display = 'none';
+        document.getElementById('privacy-view').style.display = 'none';
+        document.getElementById('terms-view').style.display = 'none';
+        
+        document.getElementById(viewId).style.display = (viewId === 'calc-view') ? 'flex' : 'block';
+        
+        if(event) {
+            let tabs = document.querySelectorAll('.tab-btn');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        }
+    }
+
+    function showEMI(title, typeId) {
+        const profile = loanProfiles[typeId];
+        document.getElementById('loan-title').innerText = title;
+        document.getElementById('jargon-box').innerHTML = profile.jargon;
+        document.getElementById('principal').value = profile.amt;
+        document.getElementById('rate').value = profile.rate;
+        document.getElementById('tenure').value = profile.time;
+        document.getElementById('proc-fee').value = profile.fee;
+        document.getElementById('other-fees').value = 0;
+        document.getElementById('rate-type').value = 'reducing';
+        calculateEMI();
+    }
+
+    function calculateTrueAPR(disbursed, emi, months) {
+        if (disbursed <= 0 || emi <= 0 || months <= 0) return 0;
+        let minRate = 0, maxRate = 100, guess = 1;
+        for(let i=0; i<20; i++) {
+            let pv = 0;
+            for(let j=1; j<=months; j++) { pv += emi / Math.pow(1 + (guess/100), j); }
+            if(pv > disbursed) { minRate = guess; guess = (guess + maxRate) / 2; } else { maxRate = guess; guess = (guess + minRate) / 2; }
+        }
+        return guess * 12; 
+    }
+
+    function calculateEMI() {
+        let p = parseFloat(document.getElementById('principal').value) || 0;
+        let r_annual = parseFloat(document.getElementById('rate').value) || 0;
+        let years = parseFloat(document.getElementById('tenure').value) || 0;
+        let procFeePerc = parseFloat(document.getElementById('proc-fee').value) || 0;
+        let otherFees = parseFloat(document.getElementById('other-fees').value) || 0;
+        let rateType = document.getElementById('rate-type').value;
+
+        let n = years * 12;
+        let r = r_annual / 12 / 100;
+        
+        if (p > 0 && r_annual > 0 && n > 0) {
+            let emi = 0, totalInterest = 0, totalPayment = 0;
+            let totalFeesCalculated = (p * (procFeePerc / 100)) + otherFees;
+
+            if (rateType === 'reducing') {
+                emi = (p * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+                totalInterest = (emi * n) - p;
+            } else {
+                totalInterest = p * (r_annual / 100) * years;
+                emi = (p + totalInterest) / n;
+            }
+            totalPayment = p + totalInterest + totalFeesCalculated;
+
+            let actualDisbursed = p - totalFeesCalculated;
+            let trueAPR = calculateTrueAPR(actualDisbursed, emi, n);
+
+            document.getElementById('emi-result').innerText = "₹ " + Math.round(emi).toLocaleString('en-IN');
+            document.getElementById('total-interest').innerText = "₹ " + Math.round(totalInterest).toLocaleString('en-IN');
+            document.getElementById('total-fees').innerText = "₹ " + Math.round(totalFeesCalculated).toLocaleString('en-IN');
+            document.getElementById('total-payment').innerText = "₹ " + Math.round(totalPayment).toLocaleString('en-IN');
+            document.getElementById('apr-result').innerText = "Real APR: " + trueAPR.toFixed(2) + "%";
+            
+            let pPercent = (p / totalPayment) * 100;
+            let iPercent = (totalInterest / totalPayment) * 100;
+            document.getElementById('pie-chart').style.background = `conic-gradient(var(--md-sys-color-primary) 0% ${pPercent}%, #A5B4FC ${pPercent}% ${pPercent + iPercent}%, #F43F5E ${pPercent + iPercent}% 100%)`;
+        } else {
+            document.getElementById('emi-result').innerText = "₹ 0";
+            document.getElementById('total-interest').innerText = "₹ 0";
+            document.getElementById('total-fees').innerText = "₹ 0";
+            document.getElementById('total-payment').innerText = "₹ 0";
+            document.getElementById('apr-result').innerText = "Real APR: 0%";
+            document.getElementById('pie-chart').style.background = `conic-gradient(#E5E7EB 0% 100%)`;
+        }
+    }
+
+    let calcExpr = "";
+    function calcAction(val) {
+        let display = document.getElementById('calc-display');
+        if (val === 'C') { calcExpr = ""; display.innerText = "0"; return; }
+        if (val === '=') {
+            try {
+                let result = new Function('return ' + calcExpr)();
+                result = Math.round(result * 10000) / 10000;
+                display.innerText = result; calcExpr = result.toString();
+            } catch (e) { display.innerText = "Error"; calcExpr = ""; }
+            return;
+        }
+        calcExpr += val; display.innerText = calcExpr;
+        display.scrollLeft = display.scrollWidth;
+    }
+
+    window.onload = () => showEMI('Two-Wheeler Loan', 'two');
+</script>
+
+</body>
+</html>
