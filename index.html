@@ -17,13 +17,14 @@
     <div class="dashboard">
         <div class="sidebar">
             <h2>Smart Tools</h2>
-            <button class="tab-btn active" onclick="showView('emi-view', event); showEMI('Two-Wheeler Loan', 'two')">🏍️ Two-Wheeler</button>
-            <button class="tab-btn" onclick="showView('emi-view', event); showEMI('Four-Wheeler Loan', 'four')">🚗 Four-Wheeler</button>
-            <button class="tab-btn" onclick="showView('emi-view', event); showEMI('Home Loan', 'home')">🏠 Home Loan</button>
-            <button class="tab-btn" onclick="showView('emi-view', event); showEMI('Personal Loan', 'personal')">👤 Personal Loan</button>
+            <button id="btn-two" class="tab-btn" onclick="showView('emi-view', event); showEMI('Two-Wheeler Loan', 'two')">🏍️ Two-Wheeler</button>
+            <button id="btn-four" class="tab-btn" onclick="showView('emi-view', event); showEMI('Four-Wheeler Loan', 'four')">🚗 Four-Wheeler</button>
+            <button id="btn-home" class="tab-btn" onclick="showView('emi-view', event); showEMI('Home Loan', 'home')">🏠 Home Loan</button>
+            <button id="btn-personal" class="tab-btn" onclick="showView('emi-view', event); showEMI('Personal Loan', 'personal')">👤 Personal Loan</button>
             <hr class="divider">
-            <button class="tab-btn" onclick="showView('calc-view', event)">🧮 Calculator</button>
+            <button id="btn-calc" class="tab-btn" onclick="showView('calc-view', event)">🧮 Calculator</button>
             <hr class="divider">
+            <button class="tab-btn" onclick="showView('settings-view', event)">⚙️ Settings</button>
             <button class="tab-btn" onclick="showView('about-view', event)">👤 About App</button>
             <button class="tab-btn" onclick="showView('privacy-view', event)">🛡️ Privacy</button>
             <button class="tab-btn" onclick="showView('terms-view', event)">📜 Terms</button>
@@ -117,8 +118,7 @@
                                         <th style="text-align: right;">Balance</th>
                                     </tr>
                                 </thead>
-                                <tbody id="schedule-body">
-                                    </tbody>
+                                <tbody id="schedule-body"></tbody>
                             </table>
                         </div>
                     </div>
@@ -151,6 +151,24 @@
                 </div>
             </div>
 
+            <div id="settings-view" class="info-view">
+                <h1>App Settings</h1>
+                <div style="background: var(--md-sys-color-surface-variant); padding: 24px; border-radius: 20px;">
+                    <h3 style="margin-top: 0;">Startup Screen</h3>
+                    <p>Choose which calculator opens automatically when you launch the app.</p>
+                    <div class="input-group" style="max-width: 300px;">
+                        <select id="default-tab-select" onchange="saveDefaultTab()">
+                            <option value="two">🏍️ Two-Wheeler Loan</option>
+                            <option value="four">🚗 Four-Wheeler Loan</option>
+                            <option value="home">🏠 Home Loan</option>
+                            <option value="personal">👤 Personal Loan</option>
+                            <option value="calc">🧮 Standard Calculator</option>
+                        </select>
+                    </div>
+                    <p id="settings-saved-msg" style="color: var(--md-sys-color-primary); font-weight: 600; display: none; margin-top: 10px;">✓ Preference saved!</p>
+                </div>
+            </div>
+
             <div id="about-view" class="info-view">
                 <h1>About App (v1.0)</h1>
                 <div style="background: var(--md-sys-color-surface-variant); padding: 24px; border-radius: 20px; margin-bottom: 24px;">
@@ -164,7 +182,6 @@
                 <h3 style="margin-top: 24px;">Open Source Contribution</h3>
                 <p>This is a 100% open-source project. We believe in collaborative development.</p>
                 <p><strong>Source Code & Issues:</strong> <a href="https://github.com/gorupa/smart-calc" target="_blank" style="color: var(--md-sys-color-primary); font-weight: 600; text-decoration: none;">View Repository on GitHub</a></p>
-                <p>Pull requests, bug reports, and feature suggestions are always welcome. Feel free to fork the repo and help improve the app!</p>
             </div>
 
             <div id="privacy-view" class="info-view">
@@ -184,7 +201,6 @@
                 <p><strong>License:</strong> MIT License</p>
                 <p>This software is provided "as is", without warranty of any kind, express or implied.</p>
                 <p><strong>Financial Disclaimer:</strong> The EMI and APR calculations provided by this application are for informational and estimation purposes only. They do not constitute professional financial advice. Actual loan terms, interest rates, and fees will vary based on your lender and financial institution.</p>
-                <p>By using this application, you agree that the developer(s) shall not be liable for any claim, damages, or other liability arising from your use of the software.</p>
             </div>
         </div>
     </div>
