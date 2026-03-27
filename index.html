@@ -104,6 +104,23 @@
                                 <h4 id="total-payment" style="font-size: 20px;">₹ 0</h4>
                             </div>
                         </div>
+                        
+                        <button id="toggle-schedule-btn" class="schedule-btn" onclick="toggleSchedule()">📊 View Repayment Schedule</button>
+                        
+                        <div id="amortization-schedule" class="schedule-container">
+                            <table class="schedule-table">
+                                <thead>
+                                    <tr>
+                                        <th>Month</th>
+                                        <th style="text-align: right;">Principal</th>
+                                        <th style="text-align: right;">Interest</th>
+                                        <th style="text-align: right;">Balance</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="schedule-body">
+                                    </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
