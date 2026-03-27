@@ -1,21 +1,35 @@
-MIT License
+# Smart EMI & Calculator 🧮
 
-Copyright (c) 2026 Gaurav Kalal
+[![License: MIT](https://img.shields.io/badge/License-MIT-indigo.svg)](https://opensource.org/licenses/MIT)
+[![PWA Ready](https://img.shields.io/badge/PWA-Ready-success.svg)]()
+[![Open Source](https://img.shields.io/badge/Open%20Source-100%25-brightgreen.svg)]()
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Live Demo [gorupa.github.io/smart-calc](https://gorupa.github.io/smart-calc/)
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+A human-centric, offline-first EMI and standard calculator built with radical transparency. 
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+## 💡 Our Manifesto
+Technology should empower, not exploit. Mainstream financial tools are often cluttered with predatory ads, hidden trackers, and confusing jargon designed to mislead. This application was built to strip all of that away. What you see is exactly what you get: a clean, accurate financial tool that respects your privacy.
+
+## ✨ Features
+* **Zero Tracking & No Ads:** No Google Analytics, Firebase, or embedded ad networks. 
+* **100% Offline Capable:** Built as a Progressive Web App (PWA). Once loaded, it works flawlessly without an internet connection.
+* **Real APR Engine:** Calculates the *true* Annual Percentage Rate (APR) by factoring in hidden processing fees, stamp duties, and flat-rate vs. reducing-balance interest.
+* **Built-in Standard Calculator:** Seamlessly switch from EMI estimations to standard math without leaving the app.
+* **Jargon Busters:** Contextual tips for different loan types (Two-Wheeler, Home, Personal) to help users make informed decisions.
+
+## 🛠️ Tech Stack
+This project uses a pure, zero-dependency stack to ensure maximum performance and security:
+* **HTML5** (Semantic structure)
+* **CSS3** (Material Design aesthetics, CSS variables, pure CSS pie charts)
+* **Vanilla JavaScript** (Calculations, DOM manipulation, Service Workers)
+
+## 🚀 Running Locally
+Because this app has zero external dependencies or build steps, running it locally is incredibly simple:
+
+1. Clone the repository:
+   ```bash
+   git clone [https://github.com/gorupa/smart-calc.git](https://github.com/gorupa/smart-calc.git)
+
+2. cd smart-calc
+
