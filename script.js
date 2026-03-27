@@ -3,25 +3,34 @@ if ('serviceWorker' in navigator) {
 }
 
 const loanProfiles = {
-    'two': { amt: 100000, rate: 11.5, time: 3, fee: 2, jargon: "💡 Vehicles depreciate quickly. Watch out for 'Flat Rates' offered by dealers—they almost double your actual APR!" },
-    'four': { amt: 800000, rate: 9.0, time: 5, fee: 1, jargon: "💡 Loans are usually secured against the car. 'Reducing Balance' is the standard for banks." },
-    'home': { amt: 5000000, rate: 8.5, time: 20, fee: 0.5, jargon: "💡 Extremely long tenure. Small changes in interest or prepayments save lakhs. You get tax benefits under 80C & 24(b)." },
-    'personal': { amt: 300000, rate: 13.0, time: 3, fee: 2.5, jargon: "💡 Unsecured loan. Very high rates and high processing fees. Always check the final APR before signing." }
+    'two': { title: 'Two-Wheeler Loan', amt: 100000, rate: 11.5, time: 3, fee: 2, jargon: "💡 Vehicles depreciate quickly. Watch out for 'Flat Rates' offered by dealers—they almost double your actual APR!" },
+    'four': { title: 'Four-Wheeler Loan', amt: 800000, rate: 9.0, time: 5, fee: 1, jargon: "💡 Loans are usually secured against the car. 'Reducing Balance' is the standard for banks." },
+    'home': { title: 'Home Loan', amt: 5000000, rate: 8.5, time: 20, fee: 0.5, jargon: "💡 Extremely long tenure. Small changes in interest or prepayments save lakhs. You get tax benefits under 80C & 24(b)." },
+    'personal': { title: 'Personal Loan', amt: 300000, rate: 13.0, time: 3, fee: 2.5, jargon: "💡 Unsecured loan. Very high rates and high processing fees. Always check the final APR before signing." }
 };
 
 function showView(viewId, event) {
+    // Hide all views
     document.getElementById('emi-view').style.display = 'none';
     document.getElementById('calc-view').style.display = 'none';
     document.getElementById('about-view').style.display = 'none';
     document.getElementById('privacy-view').style.display = 'none';
     document.getElementById('terms-view').style.display = 'none';
+    document.getElementById('settings-view').style.display = 'none';
     
+    // Show selected view
     document.getElementById(viewId).style.display = (viewId === 'calc-view') ? 'flex' : 'block';
     
+    // Update active state in sidebar
     if(event) {
         let tabs = document.querySelectorAll('.tab-btn');
         tabs.forEach(tab => tab.classList.remove('active'));
-        event.currentTarget.classList.add('active');
+        if (event.currentTarget) {
+            event.currentTarget.classList.add('active');
+        } else {
+            // For programmatic triggers (like on page load)
+            document.getElementById(event).classList.add('active');
+        }
     }
 }
 
@@ -36,7 +45,6 @@ function showEMI(title, typeId) {
     document.getElementById('other-fees').value = 0;
     document.getElementById('rate-type').value = 'reducing';
     
-    // Auto-hide schedule on tab switch
     document.getElementById('amortization-schedule').style.display = 'none';
     document.getElementById('toggle-schedule-btn').innerText = '📊 View Repayment Schedule';
     
@@ -91,7 +99,6 @@ function calculateEMI() {
         let iPercent = (totalInterest / totalPayment) * 100;
         document.getElementById('pie-chart').style.background = `conic-gradient(var(--md-sys-color-primary) 0% ${pPercent}%, #A5B4FC ${pPercent}% ${pPercent + iPercent}%, #F43F5E ${pPercent + iPercent}% 100%)`;
         
-        // Generate Schedule
         generateSchedule(p, r, n, emi, rateType, r_annual);
         
     } else {
@@ -105,7 +112,6 @@ function calculateEMI() {
     }
 }
 
-// NEW: Toggle Schedule Visibility
 function toggleSchedule() {
     const sched = document.getElementById('amortization-schedule');
     const btn = document.getElementById('toggle-schedule-btn');
@@ -118,7 +124,6 @@ function toggleSchedule() {
     }
 }
 
-// NEW: Generate Amortization Data
 function generateSchedule(principal, monthlyRate, months, emi, rateType, annualRate) {
     const tbody = document.getElementById('schedule-body');
     let balance = principal;
@@ -140,7 +145,7 @@ function generateSchedule(principal, monthlyRate, months, emi, rateType, annualR
         }
 
         balance -= principalPaid;
-        if (balance < 0) balance = 0; // Prevent negative zero display
+        if (balance < 0) balance = 0; 
 
         html += `
             <tr>
@@ -154,7 +159,6 @@ function generateSchedule(principal, monthlyRate, months, emi, rateType, annualR
     tbody.innerHTML = html;
 }
 
-// Basic Calculator Logic
 let calcExpr = "";
 function calcAction(val) {
     let display = document.getElementById('calc-display');
@@ -171,4 +175,25 @@ function calcAction(val) {
     display.scrollLeft = display.scrollWidth;
 }
 
-window.onload = () => showEMI('Two-Wheeler Loan', 'two');
+// NEW: Settings Management
+function saveDefaultTab() {
+    const selectedTab = document.getElementById('default-tab-select').value;
+    localStorage.setItem('smartCalcDefaultTab', selectedTab);
+    
+    const msg = document.getElementById('settings-saved-msg');
+    msg.style.display = 'block';
+    setTimeout(() => { msg.style.display = 'none'; }, 2000);
+}
+
+// Check settings on load and display the correct screen
+window.onload = () => {
+    const defaultTab = localStorage.getItem('smartCalcDefaultTab') || 'two';
+    document.getElementById('default-tab-select').value = defaultTab;
+    
+    if (defaultTab === 'calc') {
+        showView('calc-view', 'btn-calc');
+    } else {
+        showView('emi-view', 'btn-' + defaultTab);
+        showEMI(loanProfiles[defaultTab].title, defaultTab);
+    }
+};
