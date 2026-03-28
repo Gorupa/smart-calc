@@ -1,8 +1,0 @@
-[{
-      "relation": ["delegate_permission/common.handle_all_urls"],
-      "target": {
-        "namespace": "android_app",
-        "package_name": "io.github.gorupa.twa",
-        "sha256_cert_fingerprints": ["5A:CF:AF:DA:A8:86:3F:26:9F:2D:58:D2:40:E2:C9:88:97:C3:74:CC:8C:77:DC:02:7A:63:97:B0:84:9E:62:D2"]
-      }
-    }]
